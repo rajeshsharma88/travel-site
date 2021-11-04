@@ -1,43 +1,64 @@
+const currentTask = process.env.npm_lifecycle_event;
 const path = require("path");
+
 const postCSSPlugins = [
   require("postcss-import"),
   require("postcss-mixins"),
   require("postcss-simple-vars"),
   require("postcss-nested"),
-  require("postcss-hexrgba"),
+  require("postcss-loader"),
+
   require("autoprefixer"),
 ];
 
-module.exports = {
+let config = {
   entry: "./app/assets/scripts/App.js",
-  output: {
-    filename: "bundled.js",
-    path: path.resolve(__dirname, "app"),
-  },
-  devServer: {
-    // before: function (app, server) {
-    //   server._watch('./app/**/*.html');
-    // },
-    static: path.join(__dirname, "app"),
-    hot: true,
-    port: 3000,
-    host: "0.0.0.0",
-  },
-  mode: "development",
-  // watch: true,
   module: {
     rules: [
       {
-        test: /\.css$/i,
+        test: /\.css$/,
+        exclude: /node_modules/,
         use: [
-          "style-loader",
-          "css-loader",
+          {
+            loader: "style-loader",
+          },
+          {
+            loader: "css-loader",
+            options: {
+              importLoaders: 1,
+            },
+          },
           {
             loader: "postcss-loader",
-            options: { postcssOptions: { plugins: postCSSPlugins } },
           },
         ],
       },
     ],
   },
 };
+
+if (currentTask == "dev") {
+  config.output = {
+    filename: "bundled.js",
+    path: path.resolve(__dirname, "app"),
+  };
+  config.devServer = {
+    watchFiles: "./app/**/*.html",
+
+    static: path.join(__dirname, "app"),
+    hot: true,
+    port: 3000,
+    host: "0.0.0.0",
+  };
+  config.mode = "development";
+}
+
+if (currentTask == "build") {
+  config.output = {
+    filename: "bundled.js",
+    path: path.resolve(__dirname, "dist"),
+  };
+  config.mode = "production";
+}
+
+module.exports = config;
