@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/rajeshsharma88/travel-site#readme",
   "dependencies": {
+    "lazysizes": "^5.3.2",
     "loadash": "^1.0.0",
     "normalize.css": "^8.0.1",
     "postcss-loader": "^6.1.1"
